@@ -1,0 +1,121 @@
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# IDE/Editor files
+.eclipse.buildship.core.prefs
+.gradle/
+.idea/
+.project
+.classpath
+.settings/
+.vs/
+.vscode/
+*.iml
+*.ipr
+*.iws
+*.sublime-project
+*.sublime-workspace
+*.swp
+*~
+.editorconfig
+
+# Build and dependency directories
+bin/
+build/
+dist/
+node_modules/
+obj/
+pkg/
+vendor/
+target/
+out/
+
+# Kubernetes specific
+.kubernetes-manifests-*/
+.skaffold-*.yaml
+release/wi-kubernetes-manifests.yaml
+kubeconfig
+*.kubeconfig
+.kube/
+
+# Terraform files
+.terraform/
+.terraform.lock.hcl
+terraform.tfstate
+terraform.tfstate.backup
+*.tfstate*
+*.tfvars
+*.tfvars.json
+!example.tfvars
+crash.log
+crash.*.log
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+.terraformrc
+terraform.rc
+
+# Python
+*.pyc
+__pycache__/
+*.py[cod]
+*$py.class
+.Python
+develop-eggs/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+.pytest_cache/
+.coverage
+htmlcov/
+.venv/
+venv/
+ENV/
+env/
+.env
+
+# Docker
+Dockerfile.pip
+.dockerignore
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Temporary files
+tmp/
+temp/
+
+# Package files
+*.jar
+*.war
+*.ear
+*.zip
+*.tar.gz
+*.rar
+
+# Other
+.secrets/
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local

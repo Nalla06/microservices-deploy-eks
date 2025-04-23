@@ -1,0 +1,143 @@
+name: microservices-deploy-eks
+
+on:
+  push:
+    branches: [ latest ]
+  pull_request:
+    branches: [ latest ]
+  workflow_dispatch:
+
+env:
+  AWS_REGION: us-east-1
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+      
+    - name: SonarQube Scan
+      uses: SonarSource/sonarcloud-github-action@master
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      with:
+        args: >
+          -Dsonar.projectKey=10-Tier
+          -Dsonar.projectName=10-Tier
+          -Dsonar.java.binaries=.
+          
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v2
+      
+    - name: Login to DockerHub
+      uses: docker/login-action@v2
+      with:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
+        
+    # Build and push adservice
+    - name: Build and push adservice
+      uses: docker/build-push-action@v4
+      with:
+        context: ./src/adservice/
+        push: true
+        tags: ${{ secrets.DOCKERHUB_USERNAME }}/adservice:latest
+        
+    # Build and push cartservice
+    - name: Build and push cartservice
+      uses: docker/build-push-action@v4
+      with:
+        context: ./src/cartservice/src/
+        push: true
+        tags: ${{ secrets.DOCKERHUB_USERNAME }}/cartservice:latest
+        
+    # Build and push checkoutservice
+    - name: Build and push checkoutservice
+      uses: docker/build-push-action@v4
+      with:
+        context: ./src/checkoutservice/
+        push: true
+        tags: ${{ secrets.DOCKERHUB_USERNAME }}/checkoutservice:latest
+        
+    # Build and push currencyservice
+    - name: Build and push currencyservice
+      uses: docker/build-push-action@v4
+      with:
+        context: ./src/currencyservice/
+        push: true
+        tags: ${{ secrets.DOCKERHUB_USERNAME }}/currencyservice:latest
+        
+    # Build and push emailservice
+    - name: Build and push emailservice
+      uses: docker/build-push-action@v4
+      with:
+        context: ./src/emailservice/
+        push: true
+        tags: ${{ secrets.DOCKERHUB_USERNAME }}/emailservice:latest
+        
+    # Build and push frontend
+    - name: Build and push frontend
+      uses: docker/build-push-action@v4
+      with:
+        context: ./src/frontend/
+        push: true
+        tags: ${{ secrets.DOCKERHUB_USERNAME }}/frontend:latest
+        
+    # Build and push loadgenerator
+    - name: Build and push loadgenerator
+      uses: docker/build-push-action@v4
+      with:
+        context: ./src/loadgenerator/
+        push: true
+        tags: ${{ secrets.DOCKERHUB_USERNAME }}/loadgenerator:latest
+        
+    # Build and push paymentservice
+    - name: Build and push paymentservice
+      uses: docker/build-push-action@v4
+      with:
+        context: ./src/paymentservice/
+        push: true
+        tags: ${{ secrets.DOCKERHUB_USERNAME }}/paymentservice:latest
+        
+    # Build and push productcatalogservice
+    - name: Build and push productcatalogservice
+      uses: docker/build-push-action@v4
+      with:
+        context: ./src/productcatalogservice/
+        push: true
+        tags: ${{ secrets.DOCKERHUB_USERNAME }}/productcatalogservice:latest
+        
+    # Build and push recommendationservice
+    - name: Build and push recommendationservice
+      uses: docker/build-push-action@v4
+      with:
+        context: ./src/recommendationservice/
+        push: true
+        tags: ${{ secrets.DOCKERHUB_USERNAME }}/recommendationservice:latest
+        
+    # Build and push shippingservice
+    - name: Build and push shippingservice
+      uses: docker/build-push-action@v4
+      with:
+        context: ./src/shippingservice/
+        push: true
+        tags: ${{ secrets.DOCKERHUB_USERNAME }}/shippingservice:latest
+        
+    # Deploy to Kubernetes
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v2
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ env.AWS_REGION }}
+        
+    - name: Update kube config
+      run: aws eks update-kubeconfig --name my-eks8 --region ${{ env.AWS_REGION }}
+      
+    - name: Deploy to Kubernetes
+      run: |
+        kubectl apply -f deployment-service.yml
+        kubectl get pods -n webapps
+        kubectl get svc -n webapps
