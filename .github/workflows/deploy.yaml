@@ -6,7 +6,6 @@ on:
   pull_request:
     branches: main
   workflow_dispatch:
-    
 
 env:
   AWS_REGION: us-east-1
@@ -19,23 +18,20 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 0  # Important for SonarQube to get all history
         
       - name: SonarQube Scan
         uses: SonarSource/sonarqube-scan-action@v5.0.0
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed for PR decoration
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          SONAR_PROJECT_KEY: ${{ secrets.SONAR_PROJECT_KEY }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL || 'https://sonarcloud.io' }}
-          run: |
-            curl -sSLo sonar-scanner.zip https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-7.0.2.4839-linux-x64.zip
-            unzip -q -o sonar-scanner.zip
-            ./sonar-scanner-*/bin/sonar-scanner \
-              -Dsonar.projectKey=$SONAR_PROJECT_KEY \
-              -Dsonar.organization=lakshmirajyamnalla \
-              -Dsonar.sources=. \
-              -Dsonar.host.url=https://sonarcloud.io \
-              -Dsonar.token=$SONAR_TOKEN          
+        with:
+          args: >
+            -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }}
+            -Dsonar.organization=lakshmirajyamnalla
+            -Dsonar.sources=.
             
       - name: Run OWASP Dependency Check
         uses: dependency-check/Dependency-Check_Action@main
@@ -102,10 +98,10 @@ jobs:
             sed -i "s|image: .*|image: ${{ secrets.DOCKERHUB_USERNAME }}/$(basename $file .yaml):${{ env.IMAGE_TAG }}|g" $file
           done
         
-          - name: Deploy to Kubernetes
-          run: |
-            kubectl apply -f kubernetes-manifests/
-            kubectl rollout status deployment/frontend -n microservices-deploy --timeout=300s
+      - name: Deploy to Kubernetes
+        run: |
+          kubectl apply -f kubernetes-manifests/
+          kubectl rollout status deployment/frontend -n microservices-deploy --timeout=300s
       
       - name: Verify deployment
         run: |
