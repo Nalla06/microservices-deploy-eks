@@ -26,7 +26,11 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '19'
-        
+          
+      - name: Set JAVA_HOME
+        run: |
+          echo "JAVA_HOME=$(dirname $(dirname $(readlink -f $(which java))))" >> $GITHUB_ENV
+          
       - name: Make gradlew executable
         run: chmod +x ./gradlew
         working-directory: ./src/adservice
