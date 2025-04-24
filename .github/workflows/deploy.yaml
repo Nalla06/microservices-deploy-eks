@@ -62,10 +62,12 @@ jobs:
             
       - name: Run OWASP Dependency Check
         uses: dependency-check/Dependency-Check_Action@main
+        id: dependency-check
         with:
           project: 'microservices-deploy-eks'
           path: '.'
           format: 'HTML'
+          args: --javaHome "${{ env.JAVA_HOME }}"
           
   build-images:
     runs-on: ubuntu-latest
