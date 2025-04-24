@@ -66,9 +66,9 @@ protobuf {
     }
 }
 
-googleJavaFormat {
-    toolVersion '1.25.2'
-}
+// googleJavaFormat {
+    // toolVersion '1.25.2'
+// }
 
 // Inform IDEs like IntelliJ IDEA, Eclipse or NetBeans about the generated code.
 sourceSets {
