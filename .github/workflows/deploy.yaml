@@ -2,25 +2,16 @@ name: Microservices Deploy to EKS
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: main
   pull_request:
-    branches: [ main, develop ]
+    branches: main
   workflow_dispatch:
-    inputs:
-      environment:
-        description: 'Environment to deploy to'
-        required: true
-        default: 'dev'
-        type: choice
-        options:
-          - dev
-          - staging
-          - prod
+    
 
 env:
   AWS_REGION: us-east-1
   IMAGE_TAG: ${{ github.sha }}
-  CLUSTER_NAME: my-eks-cluster
+  CLUSTER_NAME: microservices-deploy-eks
 
 jobs:
   security-scan:
@@ -36,14 +27,14 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         with:
           args: >
-            -Dsonar.projectKey=microservices-demo-eks
-            -Dsonar.projectName=microservices-demo-eks
+            -Dsonar.projectKey=microservices-deploy-eks
+            -Dsonar.projectName=microservices-deploy-eks
             -Dsonar.java.binaries=.
             
       - name: Run OWASP Dependency Check
         uses: dependency-check/Dependency-Check_Action@main
         with:
-          project: 'microservices-demo-eks'
+          project: 'microservices-deploy-eks'
           path: '.'
           format: 'HTML'
           
@@ -108,12 +99,12 @@ jobs:
           - name: Deploy to Kubernetes
           run: |
             kubectl apply -f kubernetes-manifests/
-            kubectl rollout status deployment/frontend -n microservices-demo --timeout=300s
+            kubectl rollout status deployment/frontend -n microservices-deploy --timeout=300s
       
       - name: Verify deployment
         run: |
-          kubectl get pods -n microservices-demo
-          kubectl get svc -n microservices-demo
+          kubectl get pods -n microservices-deploy
+          kubectl get svc -n microservices-deploy
           
   post-deploy:
     runs-on: ubuntu-latest
@@ -122,7 +113,7 @@ jobs:
       - name: Run smoke tests
         run: |
           # Simple health check
-          FRONTEND_IP=$(kubectl get svc frontend-external -n microservices-demo -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
+          FRONTEND_IP=$(kubectl get svc frontend-external -n microservices-deploy -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
           curl -s -o /dev/null -w "%{http_code}" http://$FRONTEND_IP | grep 200
       
       - name: Send deployment notification
