@@ -22,7 +22,9 @@ jobs:
           fetch-depth: 0  # Important for SonarQube to get all history
       - name: Check if project exists
         run: |
-          curl -u ${{ secrets.SONAR_TOKEN }}: https://sonarcloud.io/api/projects/search?projects=${{ secrets.SONAR_PROJECT_KEY }} 
+            curl -u ${{ secrets.SONAR_TOKEN }}: \
+              "https://sonarcloud.io/api/projects/search?projects=${{ secrets.SONAR_PROJECT_KEY }}&organization=${{ secrets.SONAR_ORG }}"
+        
       - name: SonarQube Scan
         uses: SonarSource/sonarqube-scan-action@v5.0.0
         env:
