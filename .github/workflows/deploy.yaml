@@ -38,7 +38,7 @@ jobs:
             -Dsonar.branch.name=main
             -Dsonar.sources=.
             -Dsonar.host.url=https://sonarcloud.io
-            
+            -Dsonar.analysis.mode=forceAnalysis
       - name: Run OWASP Dependency Check
         uses: dependency-check/Dependency-Check_Action@main
         with:
