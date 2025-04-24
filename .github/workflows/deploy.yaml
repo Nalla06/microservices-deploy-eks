@@ -67,7 +67,8 @@ jobs:
           project: 'microservices-deploy-eks'
           path: '.'
           format: 'HTML'
-          args: --javaHome "${{ env.JAVA_HOME }}"
+          args: >
+            --javaHome /usr/lib/jvm/temurin-19-jdk-amd64
           
   build-images:
     runs-on: ubuntu-latest
