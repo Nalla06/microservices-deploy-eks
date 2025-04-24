@@ -26,10 +26,10 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '19'
-          
+
       - name: Set JAVA_HOME
         run: |
-          echo "JAVA_HOME=$(dirname $(dirname $(readlink -f $(which java))))" >> $GITHUB_ENV
+          echo "JAVA_HOME=/opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/19.0.2-7/x64" >> $GITHUB_ENV
           
       - name: Make gradlew executable
         run: chmod +x ./gradlew
