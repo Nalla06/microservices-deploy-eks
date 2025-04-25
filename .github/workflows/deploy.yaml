@@ -70,11 +70,11 @@ jobs:
             --scan /src \
             --format "HTML" \
             --out /reports
-      - name: Upload Dependency Check Report
-        uses: actions/upload-artifact@v3
-        with:
-          name: dependency-check-report
-          path: ./reports/dependency-check-report.html
+      #- name: Upload Dependency Check Report
+        #uses: actions/upload-artifact@v3
+        #with:
+          #name: dependency-check-report
+          #path: ./reports/dependency-check-report.html
                   
   build-images:
     runs-on: ubuntu-latest
