@@ -119,6 +119,10 @@ jobs:
           
       - name: Update kube config
         run: aws eks update-kubeconfig --name ${{ env.CLUSTER_NAME }} --region ${{ env.AWS_REGION }}
+     
+      - name: Create namespace if it doesn't exist
+        run: |
+          kubectl get namespace microservices-deploy || kubectl create namespace microservices-deploy
       
       - name: Update deployment manifest with new image tags
         run: |
