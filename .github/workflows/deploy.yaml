@@ -59,22 +59,15 @@ jobs:
             -Dsonar.branch.name=main
             -Dsonar.sources=.
             -Dsonar.host.url=https://sonarcloud.io
-      ##       
-      - name: Run OWASP Dependency Check
-        run: |
-          mkdir -p ./reports 
-          docker run --rm \
-            -v $(pwd):/src \
-            -v $(pwd)/reports:/reports \
-            owasp/dependency-check:latest \
-            --scan /src \
-            --format "HTML" \
-            --out /reports
-      #- name: Upload Dependency Check Report
-        #uses: actions/upload-artifact@v3
-        #with:
-          #name: dependency-check-report
-          #path: ./reports/dependency-check-report.html
+      
+      - name: Run Trivy vulnerability scanner
+      uses: aquasecurity/trivy-action@master
+      with:
+        scan-type: 'fs'
+        format: 'table'
+        exit-code: '1'
+        ignore-unfixed: true
+        severity: 'CRITICAL,HIGH'
                   
   build-images:
     runs-on: ubuntu-latest
